@@ -1,0 +1,26 @@
+{
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc -p src && npm run copy-dist",
+    "copy-dist": "cpx package.json dist/ && cpx LICENSE dist/ && cpx README.md dist/",
+    "test": "rimraf spec/built && tsc -p spec && istanbul cover node_modules/jasmine/bin/jasmine.js -x \"**/*.spec.js\""
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.3.13",
+    "@typescript-eslint/eslint-plugin": "^2.3.2",
+    "@typescript-eslint/parser": "^2.3.2",
+    "codecov": "^3.5.0",
+    "cpx": "^1.5.0",
+    "eslint": "^6.5.1",
+    "eslint-config-google": "^0.14.0",
+    "jasmine": "^3.4.0",
+    "remap-istanbul": "^0.13.0",
+    "remark-cli": "^7.0.0",
+    "remark-preset-lint-recommended": "^3.0.3",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.5.2"
+  }
+}
