@@ -16,3 +16,11 @@ Template for NodeJS
 ### Npm command
 - cpx: copy
 - rimraf: rd
+
+
+## TODO
+### for test
+- template header
+- title header
+- opt header
+  - skip: boolean|number

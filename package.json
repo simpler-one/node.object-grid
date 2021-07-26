@@ -1,0 +1,55 @@
+{
+  "name": "node.object-grid",
+  "version": "0.1.0",
+  "description": "Template for NodeJS",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && npm run .copy-dist",
+    "lint": "eslint src/**/*.ts && tslint src/**/*.ts && npm run .lint-md",
+    "lint:fix": "eslint --fix src/**/*.ts && tslint --fix src/**/*.ts",
+    "test": "jest",
+    ".. sub script ..": "",
+    ".cp": "node -e \"[_,sr,ds] = process.argv; require('fs').copyFileSync(sr, ds.endsWith('/') ? ds+sr : ds)\"",
+    ".copy-dist": "npm run .cp package.json dist/ && npm run .cp LICENSE dist/ && npm run .cp README.md dist/",
+    ".lint-md": "npx remark ./**/*.md --silently-ignore",
+    "__ memo __": "",
+    "__ls__": "npm ls --depth=0",
+    "__outdated__": "npm outdated"
+  },
+  "dependencies": {
+    "csv-parse": "^4.16.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.27.0",
+    "@typescript-eslint/parser": "^4.27.0",
+    "eslint": "^7.29.0",
+    "eslint-config-google": "^0.14.0",
+    "jest": "^27.0.4",
+    "remark-cli": "^9.0.0",
+    "remark-lint-no-heading-punctuation": "^2.0.1",
+    "remark-preset-lint-consistent": "^4.0.0",
+    "remark-preset-lint-recommended": "^5.0.0",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.3.4"
+  },
+  "author": "Hiroaki Kobayashi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simpler-one/node.object-grid.git"
+  },
+  "keywords": [
+    "csv",
+    "table",
+    "grid",
+    "matrix"
+  ],
+  "bugs": {
+    "url": "https://github.com/simpler-one/node.object-grid/issues"
+  },
+  "homepage": "https://github.com/simpler-one/node.object-grid#readme"
+}

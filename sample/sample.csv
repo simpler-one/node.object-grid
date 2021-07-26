@@ -1,0 +1,6 @@
+In,        ,      Out,
+colA,       colB, colC,  colD
+"""abc""", """def""",  false, null
+..,        """xyz""",  true,  123
+"""foo""", """bar""",  false, null
+..,        """ham""",  true,  123
