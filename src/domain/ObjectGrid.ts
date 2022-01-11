@@ -11,7 +11,7 @@ export default class ObjectGrid {
     ) {
     }
 
-    public toObjectNest(inHeader: string, env: object): object {
+    public toObjectNest(inHeader: string, reverseNest: boolean, env: object): object {
         const body = this.evalBody(env);
 
         const inColumns = this.header.map((h, c) => h.path[0] === inHeader ? c : -1).filter(c => 0 <= c);
