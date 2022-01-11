@@ -1,0 +1,62 @@
+@startuml class-domain
+
+
+package domain {
+    class ObjectGrid {
+        header: ObjectGridColumn[]
+        body: ObjectGridCell[][]
+        ---
+        toObjectNest(): object
+        toObjectArray(): object[]
+    }
+
+    class ObjectGridColumn {
+        + path: string[]
+        ---
+        setTo(target: object, value: any): void
+    }
+
+    interface ObjectGridCell {
+        ---
+        eval(meta: ObjectGridCellMeta, env: object): any
+    }
+
+    class ObjectGridCellMeta {
+        prev: any
+        templates: any[]
+        ---
+    }
+
+    interface ObjectGridParser {
+        ---
+        parse(test: string, env: object): ObjectGrid
+    }
+
+    ObjectGrid "1" o-- "n" ObjectGridColumn
+    ObjectGrid "1" o-- "n" ObjectGridCell
+
+    ObjectGridParser --> ObjectGrid : create
+
+    ObjectGridCell -> ObjectGridCellMeta : ref
+}
+
+
+package infrastructure {
+    class ObjectGridParserConfig {
+        ---
+    }
+
+    class ObjectGridSymbolConfig {
+        ---
+    }
+}
+
+@enduml
+
+
+
+@startuml class-infrastructure
+
+
+
+@enduml

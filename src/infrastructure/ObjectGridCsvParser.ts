@@ -1,14 +1,16 @@
-import ObjectGrid from "./ObjectGrid";
+import ObjectGrid from "../domain/ObjectGrid";
 import ObjectGridParserConfig, { ObjectGridSymbolConfig } from "./ObjectGridParserConfig";
+import ObjectGridColumn from "../domain/ObjectGridColumn";
+import ObjectGridCell from "../domain/ObjectGridCell";
+import { DittoCell, EvalCell, ConstCell } from "./cells";
+import ObjectGridParser from "../domain/ObjectGridParser";
 import parseCsv from "csv-parse/lib/sync";
-import ObjectGridColumn from "./ObjectGridColumn";
-import ObjectGridCell, { DittoCell, EvalCell, ConstCell } from "./ObjectGridCell";
-import { transpose } from "./util";
+import { transpose } from "../util";
 
 
 const JsonPattern = /^[0-9"\{\[]/;
 
-export default class ObjectGridParser {
+export default class ObjectGridCsvParser implements ObjectGridParser {
     constructor(
         private readonly config: ObjectGridParserConfig,
     ) {
@@ -64,7 +66,7 @@ export default class ObjectGridParser {
     }
 
     private parseBody(bodyCsv: string[][]): ObjectGridCell[][] {
-        const metaMap = ObjectGridParser.metaSymbolMap(this.config);
+        const metaMap = ObjectGridCsvParser.metaSymbolMap(this.config);
         const constMap = new Map<string, ObjectGridCell>();
         for (const [k, v] of ObjectGridSymbolConfig.constMap(this.config.symbols).entries()) {
             constMap.set(k, new ConstCell(v)); // TODO: Map.map

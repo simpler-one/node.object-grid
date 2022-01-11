@@ -1,7 +1,7 @@
 import ObjectGridColumn from "./ObjectGridColumn";
 import ObjectGridCell from "./ObjectGridCell";
 import ObjectGridCellMeta from "./ObjectGridCellMeta";
-import { setProperty } from "./util"
+import { setProperty } from "../util"
 
 
 export default class ObjectGrid {

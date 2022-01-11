@@ -9,10 +9,12 @@
     "lint": "eslint src/**/*.ts && tslint src/**/*.ts && npm run .lint-md",
     "lint:fix": "eslint --fix src/**/*.ts && tslint --fix src/**/*.ts",
     "test": "jest",
+
     ".. sub script ..": "",
     ".cp": "node -e \"[_,sr,ds] = process.argv; require('fs').copyFileSync(sr, ds.endsWith('/') ? ds+sr : ds)\"",
     ".copy-dist": "npm run .cp package.json dist/ && npm run .cp LICENSE dist/ && npm run .cp README.md dist/",
     ".lint-md": "npx remark ./**/*.md --silently-ignore",
+
     "__ memo __": "",
     "__ls__": "npm ls --depth=0",
     "__outdated__": "npm outdated"

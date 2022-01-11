@@ -1,4 +1,4 @@
-import { setProperty } from "./util"
+import { setProperty } from "./util";
 
 
 export default class ObjectGridColumn {
