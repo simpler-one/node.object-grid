@@ -1,24 +1,27 @@
-interface ObjectGridParserConfig {
+interface ObjectGridCsvParserConfig {
     header?: number;
+    ignoredHeaders?: string[];
     symbols?: ObjectGridSymbolConfig;
-    emptyCell?: any;
+    asString?: boolean;
     transpose?: boolean;
 }
-namespace ObjectGridParserConfig {
-    export function ofDefault(): ObjectGridParserConfig {
+namespace ObjectGridCsvParserConfig {
+    export function ofDefault(): ObjectGridCsvParserConfig {
         return {
             header: 2,
+            ignoredHeaders: ["#"],
             symbols: ObjectGridSymbolConfig.ofDefault(),
-            emptyCell: undefined,
+            asString: false,
             transpose: false,
         };
     }
 
-    export function fillDefault(config: ObjectGridParserConfig): ObjectGridParserConfig {
+    export function defaultFilled(config: ObjectGridCsvParserConfig): ObjectGridCsvParserConfig {
+        // TODO: ObjectUtils.merge
         return {...ofDefault(), ...config};
     }
 }
-export default ObjectGridParserConfig;
+export default ObjectGridCsvParserConfig;
 
 
 export interface ObjectGridSymbolConfig {
@@ -30,10 +33,7 @@ export interface ObjectGridSymbolConfig {
     true: string[];
     false: string[];
 
-    caseSensitiveUndefined: boolean;
-    caseSensitiveNull: boolean;
-    caseSensitiveTrue: boolean;
-    caseSensitiveFalse: boolean;
+    caseSensitive: boolean;
 }
 export namespace ObjectGridSymbolConfig {
     export function ofDefault(): ObjectGridSymbolConfig {
@@ -46,24 +46,21 @@ export namespace ObjectGridSymbolConfig {
             true: ["true"],
             false: ["false"],
 
-            caseSensitiveUndefined: false,
-            caseSensitiveNull: false,
-            caseSensitiveTrue: false,
-            caseSensitiveFalse: false,
+            caseSensitive: false,
         };
     }
 
-    export function fillDefault(config: ObjectGridSymbolConfig): ObjectGridSymbolConfig {
+    export function defaultFilled(config: ObjectGridSymbolConfig): ObjectGridSymbolConfig {
         return {...ofDefault(), ...config};
     }
 
     export function constMap(config: ObjectGridSymbolConfig): Map<string, any> {
         const result = new Map<string, any>();
 
-        config.undefined.forEach(sbl => result.set(lower(sbl, !config.caseSensitiveUndefined), undefined));
-        config.null.forEach(sbl => result.set(lower(sbl, !config.caseSensitiveNull), null));
-        config.true.forEach(sbl => result.set(lower(sbl, !config.caseSensitiveTrue), true));
-        config.false.forEach(sbl => result.set(lower(sbl, !config.caseSensitiveFalse), false));
+        config.undefined.forEach(sbl => result.set(lower(sbl, !config.caseSensitive), undefined));
+        config.null.forEach(sbl => result.set(lower(sbl, !config.caseSensitive), null));
+        config.true.forEach(sbl => result.set(lower(sbl, !config.caseSensitive), true));
+        config.false.forEach(sbl => result.set(lower(sbl, !config.caseSensitive), false));
 
         return result;
     }

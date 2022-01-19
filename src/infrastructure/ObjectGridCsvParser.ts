@@ -1,8 +1,8 @@
 import ObjectGrid from "../domain/ObjectGrid";
-import ObjectGridParserConfig, { ObjectGridSymbolConfig } from "./ObjectGridParserConfig";
+import ObjectGridCsvParserConfig, { ObjectGridSymbolConfig } from "./ObjectGridCsvParserConfig";
 import ObjectGridColumn from "../domain/ObjectGridColumn";
 import ObjectGridCell from "../domain/ObjectGridCell";
-import { DittoCell, EvalCell, ConstCell } from "./cells";
+import { DittoCell, EvalCell, ConstCell, EmptyCell } from "./cells";
 import ObjectGridParser from "../domain/ObjectGridParser";
 import parseCsv from "csv-parse/lib/sync";
 import { transpose } from "../util";
@@ -12,11 +12,12 @@ const JsonPattern = /^[0-9"\{\[]/;
 
 export default class ObjectGridCsvParser implements ObjectGridParser {
     constructor(
-        private readonly config: ObjectGridParserConfig,
+        private readonly config: ObjectGridCsvParserConfig,
     ) {
+        this.config = ObjectGridCsvParserConfig.defaultFilled(config);
     }
 
-    private static metaSymbolMap(config: ObjectGridParserConfig): Map<string, ObjectGridCell> {
+    private static metaSymbolMap(config: ObjectGridCsvParserConfig): Map<string, ObjectGridCell> {
         return new Map<string, ObjectGridCell>([
             [config.symbols.ditto, DittoCell.Instance],
         ]);
@@ -41,6 +42,7 @@ export default class ObjectGridCsvParser implements ObjectGridParser {
     private parseHeader(headerCsv: string[][]): ObjectGridColumn[] {
         const colLen = headerCsv[0].length;
         const result: ObjectGridColumn[] = [];
+        const ignoredColumns = new Set(this.config.ignoredHeaders);
 
         let prevPath: string[] = [];
         for (let c = 0; c < colLen; c++) {
@@ -48,10 +50,16 @@ export default class ObjectGridCsvParser implements ObjectGridParser {
             let canCopy = true;
             for (let r = 0; r < headerCsv.length; r++) {
                 const cur = headerCsv[r][c];
+                if (ignoredColumns.has(cur)) {
+                    break;
+                }
+
                 if (cur === "") {
-                    if (canCopy && curPath.length < prevPath.length) {
-                        curPath.push(prevPath[r]);
+                    if (!canCopy || prevPath.length <= r) {
+                        continue; // Ignore
                     }
+
+                    curPath.push(prevPath[r]);
                 } else {
                     curPath.push(cur);
                     canCopy = false;
@@ -81,15 +89,16 @@ export default class ObjectGridCsvParser implements ObjectGridParser {
         cellText: string, metaMap: Map<string, ObjectGridCell>, constMap: Map<string, ObjectGridCell>
     ): any {
         if (cellText === "") {
-            return this.config.emptyCell;
+            return EmptyCell.Instance;
         }
 
         if (metaMap.has(cellText)) {
             return metaMap.get(cellText);
         }
 
-        if (constMap.has(cellText)) {
-            return constMap.get(cellText);
+        const symbolText = this.config.symbols.caseSensitive ? cellText : cellText.toLowerCase();
+        if (constMap.has(symbolText)) {
+            return constMap.get(symbolText);
         }
 
         if (JsonPattern.test(cellText)) {

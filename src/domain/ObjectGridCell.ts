@@ -1,6 +1,9 @@
 import ObjectGridCellMeta from "./ObjectGridCellMeta";
+import ObjectGridEvalConfig from "./ObjectGridEvalConfig";
 
 
 export default interface ObjectGridCell {
-    eval(meta: ObjectGridCellMeta, env: object): any;
+    get isEmpty(): boolean;
+
+    eval(config: ObjectGridEvalConfig, meta: ObjectGridCellMeta): any;
 }

@@ -2,6 +2,14 @@ import ObjectGridColumn from "./ObjectGridColumn";
 import ObjectGridCell from "./ObjectGridCell";
 import ObjectGridCellMeta from "./ObjectGridCellMeta";
 import { setProperty } from "../util"
+import ObjectGridEvalConfig from "./ObjectGridEvalConfig";
+
+// TODO: StringUtil
+const ESCAPE_MAP = {
+    "\t": "\\t",
+    "\n": "\\n",
+    "\r": "\\r",
+};
 
 
 export default class ObjectGrid {
@@ -11,11 +19,22 @@ export default class ObjectGrid {
     ) {
     }
 
-    public toObjectNest(inHeader: string, reverseNest: boolean, env: object): object {
-        const body = this.evalBody(env);
+    public toObjectNest(
+        inHeader: string,
+        evalConfig: ObjectGridEvalConfig,
+        opt: {
+            outHeaders?: string[],
+            separateByOutHeader?: boolean,
+            skipEmptyRow: boolean,
+        } = undefined
+    ): object {
+        evalConfig = ObjectGridEvalConfig.defaultFilled(evalConfig);
 
-        const inColumns = this.header.map((h, c) => h.path[0] === inHeader ? c : -1).filter(c => 0 <= c);
-        const outColumns = this.header.map((h, c) => h.path[0] !== inHeader ? c : -1).filter(c => 0 <= c);
+        const body = this.evalBody(evalConfig);
+        const asOut = opt?.outHeaders ? Set.prototype.has.bind(new Set(opt?.outHeaders)) : () => true;
+
+        const inColumns = this.header.flatMap((h, c) => h.path[0] === inHeader ? c : []);
+        const outColumns = this.header.flatMap((h, c) => h.path[0] !== inHeader && asOut(h.path[0]) ? c : []);
 
         const result = {};
         for (let r = 0; r < body.length; r++) { // TODO: (r, c) ログ
@@ -33,8 +52,8 @@ export default class ObjectGrid {
         return result;
     }
 
-    public toObjectArray(env: object): object[] {
-        const body = this.evalBody(env);
+    public toObjectArray(evalConfig: ObjectGridEvalConfig): object[] {
+        const body = this.evalBody(evalConfig);
         
         const result: object[] = [];
         for (let r = 0; r < body.length; r++) { // TODO: (r, c) ログ
@@ -50,7 +69,7 @@ export default class ObjectGrid {
         return result;
     }
 
-    private evalBody(env: object): any[][] {
+    private evalBody(config: ObjectGridEvalConfig): any[][] {
         // TODO: template
         const templates: any[] = [];
 
@@ -62,7 +81,8 @@ export default class ObjectGrid {
 
             for (let c = 0; c < row.length; c++) {
                 const meta = new ObjectGridCellMeta(prevRow[c], null);
-                curResult.push(row[c].eval(meta, env));
+                const result = ObjectGrid.escapeChar(row[c].eval(config, meta), config);
+                curResult.push(result);
             }
 
             result.push(curResult);
@@ -72,4 +92,16 @@ export default class ObjectGrid {
         return result;
     }
 
+    private static escapeChar(value: any, config: ObjectGridEvalConfig): any {
+        if (typeof value !== "string") {
+            return value;
+        }
+
+        let result = value;
+        for (const char of config.escapeChars) {
+            result = result.replaceAll(char, ESCAPE_MAP[char]);
+        }
+
+        return result;
+    }
 }

@@ -3,17 +3,15 @@ import ObjectGridCellMeta from "../../domain/ObjectGridCellMeta";
 import ObjectGridEvalConfig from "../../domain/ObjectGridEvalConfig";
 
 
-export default class EvalCell implements ObjectGridCell {
-    public get isEmpty(): boolean {
-        return false;
-    }
+export default class EmptyCell implements ObjectGridCell {
+    public static readonly Instance: EmptyCell = new EmptyCell();
 
-    public constructor(
-        private readonly expression: string,
-    ) {
+
+    public get isEmpty(): boolean {
+        return true;
     }
 
     public eval(config: ObjectGridEvalConfig, meta: ObjectGridCellMeta): any {
-        return eval(this.expression);
+        return config.emptyValue;
     }
 }
